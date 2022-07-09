@@ -1,0 +1,29 @@
+/win/node_modules
+/win/.vscode
+/win/dist
+/win/client
+
+
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+learner/node_modules
+learner/.pnp
+learner/.pnp.js
+
+# testing
+learner/coverage
+
+# production
+learner/build
+
+# misc
+learner/.DS_Store
+learner/.env.local
+learner/.env.development.local
+learner/.env.test.local
+learner/.env.production.local
+
+learner/npm-debug.log*
+learner/yarn-debug.log*
+learner/yarn-error.log*
