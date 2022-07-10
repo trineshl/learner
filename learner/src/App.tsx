@@ -3,6 +3,7 @@ import {
   IonApp,
   IonIcon,
   IonLabel,
+  IonLoading,
   IonRouterOutlet,
   IonTabBar,
   IonTabButton,
@@ -10,7 +11,7 @@ import {
   setupIonicReact
 } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
-import { person, home } from 'ionicons/icons';
+import { person, book } from 'ionicons/icons';
 import Tab1 from './pages/Tab1';
 import Tab2 from './pages/Tab2';
 
@@ -34,19 +35,15 @@ import '@ionic/react/css/display.css';
 import './theme/variables.css';
 import LoginPg from './pages/LoginPg';
 import { Component } from 'react';
-import { Storage } from '@capacitor/storage';
 import tnl from './tnl/tnl';
 import './tnl/tnl.css';
+import GCacheUtils from './components/CacheUtils';
 
 setupIonicReact();
 
 interface infStates {
-
+  IsLoading: boolean;
   IsSessionExists: boolean;
-}
-
-interface infStorage {
-  Expiry: string;
 }
 
 export class App extends Component<{}, infStates> {
@@ -58,7 +55,8 @@ export class App extends Component<{}, infStates> {
     const LMe = this;
 
     LMe.state = {
-      IsSessionExists: false
+      IsSessionExists: false,
+      IsLoading: true
     };
   }
 
@@ -68,34 +66,40 @@ export class App extends Component<{}, infStates> {
     LMe.pvtCheckSession();
   }
 
-  async pvtCheckSession() {
+  pvtCheckSession() {
 
     const LMe = this;
 
-    let LStudentObj = await Storage.get({ key: 'studentobject' });
+    const LStudentObj = GCacheUtils.GetLoggedInStudentObject();
 
-    LStudentObj = JSON.parse(LStudentObj.value || '{}') || {};
+    LStudentObj.then((p_objStudent: any) => {
 
-    if (tnl.isObjEmpty(LStudentObj)) {
+      //Stop loading
+      LMe.setState({ IsLoading: false });
 
-      return;//means user is not logged in
-    }//if..
+      if (tnl.isObjEmpty(p_objStudent)) {
 
-    var LStudent: any = LStudentObj;
+        return;//means user is not logged in
+      }//if..
 
-    //Check for expiry
-    if (tnl.isEmpty(LStudent.Expiry)) {
+      //Check for expiry
+      if (tnl.isEmpty(p_objStudent.Expiry)) {
 
-      return;
-    }//if..
+        return;
+      }//if..
 
-    if (new Date() > new Date(LStudent.Expiry)) {
+      let LTodaysDate = new Date().setHours(0, 0, 0, 0),
+        LExpiryDate = new Date(p_objStudent.Expiry).setHours(0, 0, 0, 0);
 
-      return;
-    }//if..
+      //Date format is saved in DB is "YYYY-MM-DD"
+      if (LTodaysDate > LExpiryDate) {
 
-    //Here means, user is logged in
-    LMe.setState({ IsSessionExists: true });
+        return;
+      }//if..
+
+      //Here means, user is logged in
+      LMe.setState({ IsSessionExists: true });
+    });
   }
 
   pvtGetLoginPage() {
@@ -112,20 +116,22 @@ export class App extends Component<{}, infStates> {
         <IonReactRouter>
           <IonTabs>
             <IonRouterOutlet>
-              <Route exact path="/tab1">
-                <Tab1 />
-              </Route>
+              <Route exact path="/tab1" component={Tab1} />
               <Route exact path="/tab2">
                 <Tab2 />
               </Route>
+
+              <Route exact path="/tab1/:course" component={Tab1} />
+              <Route exact path="/tab1/:course/:questionId" component={Tab1} />
+
               <Route exact path="/">
                 <Redirect to="/tab1" />
               </Route>
             </IonRouterOutlet>
-            <IonTabBar slot="bottom">
+            <IonTabBar slot="bottom" color="primary">
               <IonTabButton tab="tab1" href="/tab1">
-                <IonIcon icon={home} />
-                <IonLabel>Home</IonLabel>
+                <IonIcon icon={book} />
+                <IonLabel>Subjects</IonLabel>
               </IonTabButton>
               <IonTabButton tab="tab2" href="/tab2">
                 <IonIcon icon={person} />
@@ -141,12 +147,14 @@ export class App extends Component<{}, infStates> {
   render() {
     const LMe = this;
 
-    if (LMe.state.IsSessionExists === false) {
-
-      return LMe.pvtGetLoginPage();
-    }//if..
-
-    return LMe.pvtGetTabPanel();
+    return <>
+      <IonLoading
+        isOpen={LMe.state.IsLoading}
+        onDidDismiss={() => { LMe.setState({ IsLoading: false }) }}
+        message={'Loading, please wait...'}
+      />
+      {LMe.state.IsSessionExists ? LMe.pvtGetTabPanel() : LMe.pvtGetLoginPage()}
+    </>;
   }
 }
 export default App;

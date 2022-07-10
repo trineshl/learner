@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 
 import { IonButton, IonContent, IonHeader, IonInput, IonItem, IonLabel, IonPage, IonTitle, IonToolbar, IonLoading } from '@ionic/react';
 import tnl from '../tnl/tnl';
-import { Storage } from '@capacitor/storage';
+import GCacheUtils from '../components/CacheUtils';
 
 interface infStates {
 
@@ -14,7 +14,7 @@ interface infStates {
 
 export default class LoginPg extends Component<{}, infStates> {
 
-   private FErrorMessage: string = 'aa';
+   private FErrorMessage: string = '';
 
    constructor(props: any) {
 
@@ -70,7 +70,7 @@ export default class LoginPg extends Component<{}, infStates> {
          LRequestOptions,
          LUrl;
 
-      LUrl = tnl.BaseUrl() + 'login';
+      LUrl = GCacheUtils.BaseUrl() + 'login';
 
       LRequestOptions = {
          method: 'PUT',
@@ -96,12 +96,7 @@ export default class LoginPg extends Component<{}, infStates> {
                   return;
                }
 
-               await Storage.set({
-                  key: 'studentobject',
-                  value: JSON.stringify(responseJson.studentObj),
-               });
-
-               window.location.href = '';
+               GCacheUtils.Login(responseJson.studentObj);
 
                LMe.setState({
                   IsLoading: false,
@@ -109,8 +104,12 @@ export default class LoginPg extends Component<{}, infStates> {
                });
             },
             (error) => {
+
+               LMe.FErrorMessage = 'You are not connected to the server.';
+
                LMe.setState({
-                  IsLoading: false
+                  IsLoading: false,
+                  CanShowErrorMsg: true
                });
             }
          );

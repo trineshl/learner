@@ -147,11 +147,6 @@ class Tnl {
 
     //     return localStorage.getItem(p_key);
     // }
-
-    BaseUrl() {
-
-        return 'http://192.168.43.180:9000/';
-    }
 }
 
 export default new Tnl();

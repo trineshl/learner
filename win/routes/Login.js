@@ -28,8 +28,11 @@ FRouter.put('/', async (p_objReq, p_objRes) => {
 
       const LStudentObj = p_response[0];
 
-      if (new Date() > new Date(LStudentObj.Expiry)) {
+      let LTodaysDate = new Date().setHours(0, 0, 0, 0),
+         LExpiryDate = new Date(LStudentObj.Expiry).setHours(0, 0, 0, 0);
 
+      //Date format is saved in DB is "YYYY-MM-DD"
+      if (LTodaysDate > LExpiryDate) {
          //Expiry
          return p_objRes.json(ErrorObj({
             message: 'Your app validity is expired, kindly contact your Institute.',
