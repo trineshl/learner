@@ -4,6 +4,7 @@ import { Storage } from '@capacitor/storage';
 class CacheUtils {
 
    private FStudentObj: any = null;
+   private FMCQs: any = null;
 
    async GetLoggedInStudentObject() {
 
@@ -24,6 +25,10 @@ class CacheUtils {
          key: 'studentobject',
          value: '',
       });
+      await Storage.set({
+         key: 'mcqsobject',
+         value: '',
+      });
       this.Invalidate();
       window.location.href = '';
    }
@@ -35,18 +40,115 @@ class CacheUtils {
          value: JSON.stringify(p_objStudentObj),
       });
       window.location.href = '/tab1';
-      // window.history.pushState('', '', '/tab1');
+   }
+
+   async SetMCQs(p_objMCQs: Object) {
+
+      return await Storage.set({
+         key: 'mcqsobject',
+         value: JSON.stringify(p_objMCQs),
+      });
+   }
+
+   async GetMCQs() {
+
+      const LMe = this;
+
+      if (tnl.isObjEmpty(LMe.FMCQs) === true) {
+
+         LMe.FMCQs = await Storage.get({ key: 'mcqsobject' });
+         LMe.FMCQs = JSON.parse(LMe.FMCQs.value || '{}') || {};
+      }//if..
+
+      return LMe.FMCQs;
    }
 
    Invalidate() {
       const LMe = this;
 
       LMe.FStudentObj = null;
+      LMe.FMCQs = null;
    }
 
    BaseUrl() {
 
       return 'http://192.168.43.180:9000/';
+   }
+
+   GetSyllabusDispText(p_strActCode: any) {
+
+      let LResult = '';
+
+      switch (p_strActCode) {
+
+         case 'askedQues':
+            LResult = 'Previously asked questions';
+            break;
+
+         case 'internet':
+            LResult = 'Internet';
+            break;
+
+         case 'word':
+            LResult = 'Word';
+            break;
+
+         case 'powerpoint':
+            LResult = 'Power Point';
+            break;
+
+         case 'excel':
+            LResult = 'Excel';
+            break;
+
+         case 'os':
+            LResult = 'Operating System';
+            break;
+
+         case 'computer':
+            LResult = 'Computer';
+            break;
+      }
+
+      return LResult;
+   }
+
+   GetSyllabusImage(p_strActCode: any) {
+
+      let LResult = '';
+
+      switch (p_strActCode) {
+
+         case 'askedQues':
+            LResult = './mcqs/paper.jpg';
+            break;
+
+         case 'internet':
+            LResult = './mcqs/ie.jpg';
+            break;
+
+         case 'word':
+            LResult = './mcqs/word.jpg';
+            break;
+
+         case 'powerpoint':
+            LResult = './mcqs/point.jpg';
+            break;
+
+         case 'excel':
+            LResult = './mcqs/excel.jpg';
+            break;
+
+         case 'os':
+            LResult = './mcqs/os.jpg';
+            break;
+
+         case 'computer':
+            LResult = './mcqs/computer.png';
+            break;
+      }
+
+      return LResult;
    }
 }
 

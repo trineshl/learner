@@ -11,6 +11,7 @@ import './Tab1.css';
 import { Component } from 'react';
 import GCacheUtils from '../components/CacheUtils';
 import MCQs from '../components/MCQs';
+import tnl from '../tnl/tnl';
 
 interface infProps {
   match: any;
@@ -20,12 +21,12 @@ interface infStates {
 
   CanShowErrorMsg: boolean;
   IsLoading: boolean;
+  Response: any;
 }
 
 class Tab1 extends Component<infProps, infStates> {
 
   private FErrorMessage: any;
-  private FResponse: any;
 
   constructor(props: any) {
 
@@ -35,7 +36,8 @@ class Tab1 extends Component<infProps, infStates> {
 
     LMe.state = {
       CanShowErrorMsg: false,
-      IsLoading: true
+      IsLoading: true,
+      Response: {}
     };
 
     LMe.FErrorMessage = 'MCQs not found.';
@@ -51,6 +53,25 @@ class Tab1 extends Component<infProps, infStates> {
   }
 
   pvtLoadAllMCQs(p_strCourse: string) {
+    /**
+     * @method pvtLoadAllMCQs
+     * This method will loads the MCQs from Local-Storage, if not found then fire the command and loads the cache
+     */
+    const LMe = this;
+
+    GCacheUtils.GetMCQs().then((p_responseJson: any) => {
+
+      if (tnl.isObjEmpty(p_responseJson)) {
+        //Here means, MCQs are not in cache
+        LMe.pvtFetchMCQs(p_strCourse);
+        return;
+      }//if..
+
+      LMe.pvtOnMCQsLoad(p_responseJson);
+    });
+  }
+
+  pvtFetchMCQs(p_strCourse: string) {
 
     const LMe = this;
 
@@ -63,38 +84,13 @@ class Tab1 extends Component<infProps, infStates> {
       }
     };
 
-    // No need to check for session
     fetch(LUrl, LRequestOptions)
       .then((response) => response.json())
       .then(
         async (responseJson) => {
 
-          if (responseJson.success === false) {
-
-            LMe.FErrorMessage = responseJson.message;
-
-            LMe.setState({
-              IsLoading: false,
-              CanShowErrorMsg: true
-            });
-            return;
-          }
-
-          if (responseJson.mcqTypes.length <= 0) {
-
-            LMe.FErrorMessage = 'No MCQs were found for your course.';
-            LMe.setState({
-              IsLoading: false,
-              CanShowErrorMsg: true
-            });
-            return;
-          }//if..
-
-          LMe.FResponse = responseJson;
-
-          LMe.setState({
-            IsLoading: false,
-            CanShowErrorMsg: false
+          GCacheUtils.SetMCQs(responseJson).then(() => {
+            LMe.pvtOnMCQsLoad(responseJson);
           });
         },
         (error) => {
@@ -107,6 +103,42 @@ class Tab1 extends Component<infProps, infStates> {
           });
         }
       );
+  }
+
+  pvtOnMCQsLoad(responseJson: any) {
+
+    const LMe = this;
+
+    if (tnl.isObjEmpty(responseJson)) {
+      return;
+    }
+
+    if (responseJson.success === false) {
+
+      LMe.FErrorMessage = responseJson.message;
+
+      LMe.setState({
+        IsLoading: false,
+        CanShowErrorMsg: true
+      });
+      return;
+    }
+
+    if (responseJson.mcqTypes.length <= 0) {
+
+      LMe.FErrorMessage = 'No MCQs were found for your course.';
+      LMe.setState({
+        IsLoading: false,
+        CanShowErrorMsg: true
+      });
+      return;
+    }//if..
+
+    LMe.setState({
+      Response: responseJson,
+      IsLoading: false,
+      CanShowErrorMsg: false
+    });
   }
 
   pvtGetErrorMessage() {
@@ -164,10 +196,17 @@ class Tab1 extends Component<infProps, infStates> {
 
     return <IonContent fullscreen>
       <MCQs
-        Response={LMe.FResponse}
+        Response={LMe.state.Response}
         OwnerProps={LMe.props}
       ></MCQs>
     </IonContent>;
+  }
+
+  pvtGetHeader() {
+
+    const LMe = this;
+
+    return GCacheUtils.GetSyllabusDispText(LMe.props.match.params?.course) || 'Syllabus';
   }
 
   render() {
@@ -180,7 +219,7 @@ class Tab1 extends Component<infProps, infStates> {
             <IonButtons slot="start">
               <IonBackButton />
             </IonButtons>
-            <IonTitle>{LMe.props.match.params?.course || 'Syllabus'}</IonTitle>
+            <IonTitle>{LMe.pvtGetHeader()}</IonTitle>
           </IonToolbar>
         </IonHeader>
         {LMe.pvtGetPageContent()}

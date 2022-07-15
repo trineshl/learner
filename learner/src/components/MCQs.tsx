@@ -1,7 +1,7 @@
 import { IonAvatar, IonButton, IonItem, IonLabel, IonList } from '@ionic/react';
 import { Component } from 'react';
 import tnl from '../tnl/tnl';
-import Icon from './icon.png';
+import GCacheUtils from './CacheUtils';
 import Questions from './Questions';
 
 interface infProps {
@@ -15,6 +15,8 @@ interface infStates {
 
 export default class MCQs extends Component<infProps, infStates> {
 
+   private FResponseObj: any;
+
    constructor(props: any) {
 
       super(props);
@@ -26,9 +28,15 @@ export default class MCQs extends Component<infProps, infStates> {
       };
    }
 
+   pvtGetResponseObj() {
+      const LMe = this;
+
+      return LMe.props.Response;
+   }
+
    pvtGetSubjectsList() {
       const LMe = this,
-         LMCQTypes = LMe.props.Response?.mcqTypes,
+         LMCQTypes = LMe.pvtGetResponseObj()?.mcqTypes,
          LResult: any = [];
 
       if (tnl.isEmpty(LMCQTypes) === true) {
@@ -44,10 +52,10 @@ export default class MCQs extends Component<infProps, infStates> {
                button
                routerLink={'/tab1/' + p_objRecord.objtype} detail>
                <IonAvatar slot="start">
-                  <img src={Icon} alt="" />
+                  <img src={require(GCacheUtils.GetSyllabusImage(p_objRecord.objtype) + '')} alt="" />
                </IonAvatar>
                <IonLabel>
-                  {p_objRecord.objtype}
+                  {GCacheUtils.GetSyllabusDispText(p_objRecord.objtype)}
                </IonLabel>
             </IonItem>
          );
@@ -59,7 +67,7 @@ export default class MCQs extends Component<infProps, infStates> {
    pvtGetQuestionsSelectionList(p_strCourse: string) {
 
       const LMe = this,
-         LMCQs = LMe.props.Response?.mcqs,
+         LMCQs = LMe.pvtGetResponseObj()?.mcqs,
          LResult = [];
 
       if (tnl.isEmpty(LMCQs) === true) {
@@ -90,7 +98,7 @@ export default class MCQs extends Component<infProps, infStates> {
          </IonButton>);
       }//for..
 
-      return <div style={{ padding: '20px 0 20px 25px' }}>{LResult}</div>;
+      return <div style={{ padding: '20px 15px 100px 15px', textAlign: 'center' }}>{LResult}</div>;
    }
 
    pad(n: any, length: any) {
@@ -101,7 +109,7 @@ export default class MCQs extends Component<infProps, infStates> {
    pvtGetQuestions(p_strCourse: string, p_intQuestionNo: string) {
 
       const LMe = this,
-         LMCQs = LMe.props.Response?.mcqs,
+         LMCQs = LMe.pvtGetResponseObj()?.mcqs,
          LQuestionNo = LMe.state.QuestionNo === -1 ? parseInt(p_intQuestionNo) : LMe.state.QuestionNo;
 
       if (tnl.isEmpty(LMCQs) === true) {
@@ -109,7 +117,9 @@ export default class MCQs extends Component<infProps, infStates> {
          return null;
       }//if..
 
-      var LQueAnsObj = LMCQs[p_strCourse][LQuestionNo];
+      let LSyllabusMCQ = LMCQs[p_strCourse],
+         LQueAnsObj = LSyllabusMCQ[LQuestionNo],
+         LSyllabusLen = LSyllabusMCQ.length - 1;
 
       return <Questions
          QuestionObj={LQueAnsObj}
@@ -117,12 +127,26 @@ export default class MCQs extends Component<infProps, infStates> {
          OwnerProps={LMe.props.OwnerProps}
          HandleOnNextClick={() => {
 
-            LMe.setState({ QuestionNo: LQuestionNo + 1 });
+            LQueAnsObj.isSolved = true;
+
+            let LNextQuestionNo = LQuestionNo + 1;
+
+            if (LNextQuestionNo > LSyllabusLen) {
+               LNextQuestionNo = 0;
+            }
+
+            LMe.setState({ QuestionNo: LNextQuestionNo });
             return '';
          }}
          HandleOnPrevClick={() => {
 
-            LMe.setState({ QuestionNo: LQuestionNo - 1 });
+            let LPrevQuestionNo = LQuestionNo - 1;
+
+            if (LPrevQuestionNo < 0) {
+               LPrevQuestionNo = LSyllabusLen;
+            }
+
+            LMe.setState({ QuestionNo: LPrevQuestionNo });
             return '';
          }}
       ></Questions>

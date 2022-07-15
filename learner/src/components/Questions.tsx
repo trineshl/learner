@@ -73,6 +73,13 @@ export default class Questions extends Component<infProps, infStates> {
       return <div style={{ marginTop: 20 }}>{LResult}</div>;
    }
 
+   pvtRadioChange(event: any) {
+
+      const LMe = this;
+
+      LMe.setState({ MarkedAnswer: event.detail.value });
+   }
+
    render() {
       const LMe = this,
          LQuestionObj = LMe.props.QuestionObj;
@@ -80,10 +87,16 @@ export default class Questions extends Component<infProps, infStates> {
       return (
          <div className="Flex1 VBox">
             <IonList>
-               <IonItemDivider>Question No. {LMe.props.QuestionNo}</IonItemDivider>
+               <IonItemDivider>
+                  <div className="HBox Flex1" >
+                     <div>Question No. {LMe.props.QuestionNo}</div>
+                     <span className="Flex1"></span>
+                     <span style={{ marginRight: 10 }} className="BlueLink" onClick={() => LMe.setState({ InMarathi: !LMe.state.InMarathi })}>{LMe.state.InMarathi ? 'In English' : 'In Marathi'}</span>
+                  </div>
+               </IonItemDivider>
 
                <div style={{ margin: 10 }}>
-                  <IonRadioGroup value={LMe.state.MarkedAnswer} onIonChange={e => LMe.setState({ MarkedAnswer: e.detail.value })}>
+                  <IonRadioGroup value={LMe.state.MarkedAnswer} onIonChange={e => LMe.pvtRadioChange(e)}>
                      <IonListHeader>
                         <IonLabel>{LMe.state.InMarathi === false ? LQuestionObj.question : LQuestionObj.questionMar}</IonLabel>
                      </IonListHeader>
