@@ -121,6 +121,12 @@ export default class MCQs extends Component<infProps, infStates> {
          LQueAnsObj = LSyllabusMCQ[LQuestionNo],
          LSyllabusLen = LSyllabusMCQ.length - 1;
 
+      LQueAnsObj.questionMar = LQueAnsObj.questionMar || 'हा प्रश्न मराठी भाषेत मध्ये उपलब्ध नाही';
+      LQueAnsObj.optionAMar = LQueAnsObj.optionAMar || LQueAnsObj.optionA || 'Option A';
+      LQueAnsObj.optionBMar = LQueAnsObj.optionBMar || LQueAnsObj.optionB || 'Option B';
+      LQueAnsObj.optionCMar = LQueAnsObj.optionCMar || LQueAnsObj.optionC || 'Option C';
+      LQueAnsObj.optionDMar = LQueAnsObj.optionDMar || LQueAnsObj.optionD || 'Option D';
+
       return <Questions
          QuestionObj={LQueAnsObj}
          QuestionNo={LMe.pad(LQuestionNo + 1, 3)}

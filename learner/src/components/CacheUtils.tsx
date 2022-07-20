@@ -108,6 +108,22 @@ class CacheUtils {
          case 'computer':
             LResult = 'Computer';
             break;
+
+         case 'impQues':
+            LResult = 'Important ENG 30';
+            break;
+
+         case 'impQuesEng40':
+            LResult = 'Important ENG 40';
+            break;
+
+         case 'oldImpQues':
+            LResult = 'Old Important ENG 30';
+            break;
+
+         case 'oldImpQuesEng40':
+            LResult = 'Old Important ENG 40';
+            break;
       }
 
       return LResult;
@@ -115,7 +131,7 @@ class CacheUtils {
 
    GetSyllabusImage(p_strActCode: any) {
 
-      let LResult = '';
+      let LResult = './mcqs/paper.jpg';
 
       switch (p_strActCode) {
 
