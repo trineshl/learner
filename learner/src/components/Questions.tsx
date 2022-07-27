@@ -2,6 +2,7 @@ import { Component } from 'react';
 import { IonFabButton, IonIcon, IonItem, IonItemDivider, IonLabel, IonList, IonListHeader, IonRadio, IonRadioGroup } from '@ionic/react';
 import tnl from '../tnl/tnl';
 import { arrowBackCircle, arrowForwardCircle } from 'ionicons/icons';
+import GCacheUtils from './CacheUtils';
 
 interface infProps {
    QuestionObj: any;
@@ -13,7 +14,7 @@ interface infProps {
 
 interface infStates {
    InMarathi: boolean;
-   MarkedAnswer: string;
+   MarkedAnswer: any;
 }
 
 export default class Questions extends Component<infProps, infStates> {
@@ -25,16 +26,20 @@ export default class Questions extends Component<infProps, infStates> {
       const LMe = this;
 
       LMe.state = {
-         MarkedAnswer: '',
+         MarkedAnswer: -1,
          InMarathi: false
       };
+   }
+
+   componentDidMount() {
+      GCacheUtils.AnsQivenByStudent(true);
    }
 
    pvtGetColor(p_intIndex: Number) {
 
       const LMe = this,
          LQuestionObj = LMe.props.QuestionObj,
-         LMarkedAns = parseInt(LMe.state.MarkedAnswer),
+         LMarkedAns = LMe.state.MarkedAnswer,
          LAnswer = parseInt(LQuestionObj.answer);
 
       if (LMarkedAns !== p_intIndex) {
@@ -54,7 +59,7 @@ export default class Questions extends Component<infProps, infStates> {
          LOption,
          LResult = [];
 
-      for (let LIndex = 0; LIndex < LEnglishOptionProperty.length; LIndex++) {
+      for (let LIndex = 0; LIndex < LOptionProperties.length; LIndex++) {
 
          LOption = p_objQuestion[LOptionProperties[LIndex]];
 
@@ -77,7 +82,7 @@ export default class Questions extends Component<infProps, infStates> {
 
       const LMe = this;
 
-      LMe.setState({ MarkedAnswer: event.detail.value });
+      LMe.setState({ MarkedAnswer: parseInt(event.detail.value) });
    }
 
    render() {
@@ -111,14 +116,14 @@ export default class Questions extends Component<infProps, infStates> {
             <div className="HBox" style={{ padding: '0 10px 20px 10px' }}>
                <IonFabButton onClick={() => {
                   LMe.props.HandleOnPrevClick();
-                  LMe.setState({ MarkedAnswer: '' });
+                  LMe.setState({ MarkedAnswer: -1 });
                }}>
                   <IonIcon icon={arrowBackCircle} />
                </IonFabButton>
                <div className="Flex1"></div>
                <IonFabButton onClick={() => {
-                  LMe.props.HandleOnNextClick();
-                  LMe.setState({ MarkedAnswer: '' });
+                  LMe.props.HandleOnNextClick(LMe.state.MarkedAnswer);
+                  LMe.setState({ MarkedAnswer: -1 });
                }}>
                   <IonIcon icon={arrowForwardCircle} />
                </IonFabButton>

@@ -52,6 +52,32 @@ class Tab1 extends Component<infProps, infStates> {
     });
   }
 
+  componentWillUnmount() {
+    // Getting paramas
+    const LMe = this,
+      LParams = LMe.props.match.params;
+    // Save correct & wrong answer
+    if (tnl.isEmpty(LParams.questionId) === false) {
+      // Here means question no exists means this is destory of Questions.tsx - Single Question destoryed
+      return;
+    }//if..
+
+    if (tnl.isEmpty(LParams.course) === true) {
+      // Here means this is not an destory of single question page nor question list page
+      return;
+    }//if..
+
+    if (GCacheUtils.IsStudentGaveAns() === true) {
+      // Here means Answered given by student
+      GCacheUtils.SetMCQs(LMe.state.Response);
+    }
+    else {
+      // Here means Answered NOT given by student
+    }
+
+    GCacheUtils.AnsQivenByStudent(false);
+  }
+
   pvtLoadAllMCQs(p_strCourse: string) {
     /**
      * @method pvtLoadAllMCQs

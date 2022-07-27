@@ -15,8 +15,6 @@ interface infStates {
 
 export default class MCQs extends Component<infProps, infStates> {
 
-   private FResponseObj: any;
-
    constructor(props: any) {
 
       super(props);
@@ -86,9 +84,12 @@ export default class MCQs extends Component<infProps, infStates> {
 
          LColor = 'light';
 
-         if (LRecord.isSolved === true) {
+         if (LRecord.isCorrect === true) {
             LColor = 'success';
          }//if..
+         else if (LRecord.isWrong === true) {
+            LColor = 'danger';
+         }//else if..
 
          LResult.push(<IonButton
             key={'que' + LIndex}
@@ -131,9 +132,19 @@ export default class MCQs extends Component<infProps, infStates> {
          QuestionObj={LQueAnsObj}
          QuestionNo={LMe.pad(LQuestionNo + 1, 3)}
          OwnerProps={LMe.props.OwnerProps}
-         HandleOnNextClick={() => {
+         HandleOnNextClick={(p_intMarkedAnswer: any) => {
 
-            LQueAnsObj.isSolved = true;
+            let LAnswer = parseInt(LQueAnsObj.answer);
+
+            if (tnl.isEmpty(p_intMarkedAnswer) === false) {
+
+               if (p_intMarkedAnswer === LAnswer) {
+                  LQueAnsObj.isCorrect = true;
+               }
+               else {
+                  LQueAnsObj.isWrong = true;
+               }
+            }
 
             let LNextQuestionNo = LQuestionNo + 1;
 

@@ -5,6 +5,8 @@ class CacheUtils {
 
    private FStudentObj: any = null;
    private FMCQs: any = null;
+   private FAnsQivenByStudent: any = null;
+   private FServerURL: any;
 
    async GetLoggedInStudentObject() {
 
@@ -33,7 +35,11 @@ class CacheUtils {
       window.location.href = '';
    }
 
-   async Login(p_objStudentObj: Object) {
+   async Login(p_objStudentObj: any) {
+
+      if (tnl.isEmpty(this.FServerURL) === false) {
+         p_objStudentObj.serverURL = this.FServerURL;
+      }//if..
 
       await Storage.set({
          key: 'studentobject',
@@ -70,10 +76,17 @@ class CacheUtils {
       LMe.FMCQs = null;
    }
 
-   BaseUrl() {
+   SetBaseUrl(p_strURL: any) {
+      if (tnl.isEmpty(p_strURL) === true) {
+         return;
+      }//if..
 
-      return 'http://192.168.43.180:9000/';
-      // return 'http://192.168.138.227:9000/';
+      this.FServerURL = p_strURL;
+   }
+
+   BaseUrl() {
+      return this.FServerURL || this.FStudentObj?.serverURL || 'http://192.168.138.227:9000/';
+      // return 'http://192.168.43.180:9000/';
    }
 
    GetSyllabusDispText(p_strActCode: any) {
@@ -166,6 +179,14 @@ class CacheUtils {
       }
 
       return LResult;
+   }
+
+   IsStudentGaveAns() {
+      return this.FAnsQivenByStudent;
+   }
+
+   AnsQivenByStudent(p_boolAnsQivenByStudent: any) {
+      this.FAnsQivenByStudent = p_boolAnsQivenByStudent;
    }
 }
 

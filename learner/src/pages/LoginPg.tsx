@@ -10,11 +10,13 @@ interface infStates {
    UserName: string;
    Password: string;
    IsLoading: boolean;
+   ShowServerURLBox: boolean;
+   ServerURL: string;
 }
 
 export default class LoginPg extends Component<{}, infStates> {
 
-   private FErrorMessage: string = '';
+   private FErrorMessage: any;
 
    constructor(props: any) {
 
@@ -26,7 +28,9 @@ export default class LoginPg extends Component<{}, infStates> {
          CanShowErrorMsg: false,
          UserName: '',
          Password: '',
-         IsLoading: false
+         IsLoading: false,
+         ShowServerURLBox: false,
+         ServerURL: GCacheUtils.BaseUrl()
       };
 
       LMe.FErrorMessage = 'Email and Password must be entered!';
@@ -48,6 +52,17 @@ export default class LoginPg extends Component<{}, infStates> {
          LMe.FErrorMessage = 'Password must be entered!';
          LMe.setState({ CanShowErrorMsg: true });
          return;
+      }
+
+      if (LMe.state.ShowServerURLBox === true) {
+
+         if (tnl.isEmpty(LMe.state.ServerURL)) {
+            LMe.FErrorMessage = 'Server URL must be entered!';
+            LMe.setState({ CanShowErrorMsg: true });
+            return;
+         }
+
+         GCacheUtils.SetBaseUrl(LMe.state.ServerURL);
       }
 
       LMe.setState({ IsLoading: true });
@@ -105,7 +120,8 @@ export default class LoginPg extends Component<{}, infStates> {
             },
             (error) => {
 
-               LMe.FErrorMessage = 'You are not connected to the server.';
+               LMe.FErrorMessage = <span>You are not connected to the server.<br />
+                  <span className="BlueLink" onClick={() => LMe.setState({ ShowServerURLBox: true })}>Do you want to change server URL?</span></span>;
 
                LMe.setState({
                   IsLoading: false,
@@ -137,6 +153,12 @@ export default class LoginPg extends Component<{}, infStates> {
                      <IonLabel position="floating">Enter Password</IonLabel>
                      <IonInput value={LMe.state.Password} onIonChange={e => LMe.setState({ Password: e.detail.value! })} type="password"></IonInput>
                   </IonItem>
+
+                  <IonItem style={{ margin: '20px 0 0 0', display: LMe.state.ShowServerURLBox ? 'block' : 'none' }}>
+                     <IonLabel position="floating">Server URL</IonLabel>
+                     <IonInput value={LMe.state.ServerURL} onIonChange={e => LMe.setState({ ServerURL: e.detail.value! })} ></IonInput>
+                  </IonItem>
+
                   <div style={{ margin: '20px 0 0 0' }}>
                      <span style={{ margin: '0 6px 5px 8px', color: 'red', fontSize: 'small', display: (LMe.state.CanShowErrorMsg ? 'inline-block' : 'none') }}
                         className="HelpText">{LMe.FErrorMessage}</span>
