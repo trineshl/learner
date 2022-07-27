@@ -73,6 +73,7 @@ class CacheUtils {
    BaseUrl() {
 
       return 'http://192.168.43.180:9000/';
+      // return 'http://192.168.138.227:9000/';
    }
 
    GetSyllabusDispText(p_strActCode: any) {

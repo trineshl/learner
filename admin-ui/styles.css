@@ -1,0 +1,84 @@
+/** Common CSS **/
+
+.CenterAndMiddle {
+   flex: 1;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+ }
+
+ .Middle {
+   display: flex;
+   justify-content: center;
+   align-items: center;
+ }
+ 
+ .BlueLink {
+   font-size: 13px;
+   color: blue;
+   cursor: pointer;
+ }
+ 
+ .BlueLink:hover {
+   color: #0099ff;
+   text-decoration: underline;
+ }
+ 
+ .GrayColor{
+   color: #aaa;
+ }
+ 
+ .HelpText {
+   font-size: 13px;
+ }
+ 
+ .Bold{
+   font-weight: bold;
+ }
+ 
+ /**Home Page CSS**/
+ 
+ .RootPg {
+   display: flex;
+   flex-flow: column;
+   height: 100vh;
+ }
+ 
+ .Stretch {
+   flex: 1;
+   display: flex;
+   overflow: auto;
+ }
+ 
+ .OverFlowAuto {
+   overflow: auto;
+ }
+ 
+ .VBox {
+   display: flex;
+   flex-direction: column;
+ }
+ 
+ .HBox {
+   display: flex;
+   flex-direction: row;
+   align-items: stretch;
+ }
+ 
+ .Flex1 {
+   flex: 1;
+ }
+
+ .field {
+    padding: 5px;
+    margin: 5px;
+ }
+ 
+ /* Responsive layout - makes a one column layout instead of a two-column layout */
+ 
+ @media (max-width: 300px) {
+   .HBox {
+     flex-direction: column;
+   }
+ }
+ 
