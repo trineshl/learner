@@ -9,6 +9,7 @@ var FDate;
 var FGridDiv;
 var FStudentId;
 var FModel;
+
 function init() {
 
    FNameField = document.getElementById('name');
@@ -91,7 +92,7 @@ function pvtEdit() {
 
    if (!LSelectedRows.id) {
       // If id not selected
-      alert('Select record and try again.');
+      alert('Select a record and try again.');
       return;
    }//if..
 
@@ -137,12 +138,13 @@ function pvtSaveStudent(e) {
       .then((responseJson) => {
 
          if (responseJson.success === false) {
-            alert('Not connected with server');
+            alert(` Error Code: ${responseJson.code}. \n Error Number: ${responseJson.errno} \n Message: ${responseJson.message || 'Error occurred on server.'} \n Possible Reason: Username must be unique.`);
             return;
          }
 
          alert('Student\'s record saved successfully.');
-         pvtFetchStudents();
+         // pvtFetchStudents();
+         pvtRefresh();
       },
          (error) => {
 
@@ -150,3 +152,5 @@ function pvtSaveStudent(e) {
          }
       );
 }
+
+const pvtRefresh = () => window.location.reload();

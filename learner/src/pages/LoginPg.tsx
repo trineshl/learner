@@ -120,8 +120,7 @@ export default class LoginPg extends Component<{}, infStates> {
             },
             (error) => {
 
-               LMe.FErrorMessage = <span>You are not connected to the server.<br />
-                  <span className="BlueLink" onClick={() => LMe.setState({ ShowServerURLBox: true })}>Do you want to change server URL?</span></span>;
+               LMe.FErrorMessage = <span>You are not connected to the server.</span>;
 
                LMe.setState({
                   IsLoading: false,
@@ -164,6 +163,10 @@ export default class LoginPg extends Component<{}, infStates> {
                         className="HelpText">{LMe.FErrorMessage}</span>
 
                      <IonButton shape="round" color="primary" expand="full" onClick={LMe.pvtOnLoginBtnClick.bind(LMe)}>Login</IonButton>
+                  </div>
+                  <div>
+                     <span style={{ margin: '15px 0 0 15px', display: !LMe.state.ShowServerURLBox ? 'block' : 'none' }}
+                      className="BlueLink" onClick={() => LMe.setState({ ShowServerURLBox: true })}>Change Server URL</span>
                   </div>
                </div>
                <IonLoading

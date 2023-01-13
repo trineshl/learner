@@ -6,7 +6,7 @@ const FRouter = express.Router();
 
 FRouter.get('/', async (p_objReq, p_objRes) => {
 
-   DbCon.all(`SELECT * FROM students`, (p_error, p_arrResponse) => {
+   DbCon.all(`SELECT * FROM students ORDER BY id DESC`, (p_error, p_arrResponse) => {
 
       if (p_error) {
          return p_objRes.json(ErrorObj(p_error));
