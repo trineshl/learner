@@ -85,7 +85,7 @@ class CacheUtils {
    }
 
    BaseUrl() {
-      return this.FServerURL || this.FStudentObj?.serverURL || 'http://192.168.138.227:9000/';
+      return this.FServerURL || this.FStudentObj?.serverURL || 'http://192.168.65.227:9000/';
       // return 'http://192.168.43.180:9000/';
    }
 
